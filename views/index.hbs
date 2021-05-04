@@ -1,2 +1,12 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
+
+{{#if username}}
+    {{#if password}}
+        <h2>New user!</h2>
+        <h3>Name: {{username}}</h3>
+        <h3>Password: {{password}}</h3>
+    {{/if}}
+{{/if}}
+
+<a href="/sign-up">Sign up!</a>
