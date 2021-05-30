@@ -10,6 +10,7 @@ const path = require('path');
 const session = require('express-session');
 const app_name = require('./package.json').name;
 const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.')[0]}`);
+const isUserLoggedIn = require('./middleware/login');
 
 const app = express();
 
@@ -21,7 +22,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-const isUserLoggedIn = require('./middleware/login');
 // app.use(isUserLoggedIn);
 
 // Sessions
@@ -31,6 +31,7 @@ app.use(session(appSession));
 // Express View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+hbs.registerPartials(path.join(__dirname, '/views/partials'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
@@ -39,6 +40,7 @@ app.locals.title = 'Express - Generated with IronGenerator';
 
 const index = require('./routes/index.routes');
 const auth = require('./routes/auth.routes');
+auth.use(isUserLoggedIn);
 app.use('/', index);
 app.use('/', auth);
 
