@@ -18,16 +18,23 @@ router.post('/signup', (req, res, next) => {
         return;
     }
 
-    bcryptjs
-        .genSalt(saltRounds)
-        .then(salt => bcryptjs.hash(password, salt))
-        .then(hashedPassword => {
-            return User.create({username, 'passwordHash': hashedPassword})
-        })
-        .then((user) => {
-            res.redirect('/login');
-        })
-        .catch(err => next(err));
+    User.find({username})
+        .then((dbUser) => {
+            if (dbUser) {
+                res.render('auth/signup', { errorMessage: 'This username is already taken. Please provide a different one.' });
+            } else {
+                bcryptjs
+                .genSalt(saltRounds)
+                .then(salt => bcryptjs.hash(password, salt))
+                .then(hashedPassword => {
+                    return User.create({username, 'passwordHash': hashedPassword})
+                })
+                .then((user) => {
+                    res.redirect('/login');
+                })
+                .catch(err => next(err));
+            }
+        })    
 });
 
 router.get('/login', (req, res, next) => res.render('auth/login'));
